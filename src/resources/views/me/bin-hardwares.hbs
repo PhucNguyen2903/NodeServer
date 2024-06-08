@@ -1,0 +1,93 @@
+<div class="mt-4">
+    <div>
+        <h3>The hardware has been collected</h3>
+        <a href="/me/cart/hardwares"> My product </a>
+    </div>
+
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each hardware}}
+            <tr>
+                <th scope="row">{{ sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>
+                    <a href="" class="btn btn-link btn-restore" data-id='{{this._id}}'>Restore</a>
+                    <a href="" class="btn btn-link" data-id='{{this._id}}' data-bs-toggle='modal'
+                        data-bs-target='#comfirmDelete'>Permanent Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    You have not recalled any products
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- Confirm Delete Code --}}
+
+<div class="modal" id='comfirmDelete' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Do you want to delete ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id='btn-delete-hardware' type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete form --}}
+
+<form name="delete-hardware-form" method="POST"></form>
+<form name="restore-hardware-form" method="POST"></form>
+
+<script>
+    const comfirmDelete = document.getElementById('comfirmDelete')
+
+    var id;
+    var deleteForm = document.forms['delete-hardware-form'];
+    var restoreForm = document.forms['restore-hardware-form'];
+    var btnDeleteCourse = document.getElementById('btn-delete-hardware');
+
+    if (comfirmDelete) {
+        comfirmDelete.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget
+            id = button.getAttribute('data-id')
+        })
+    }
+
+    btnDeleteCourse.onclick = function () {
+        deleteForm.action = '/hardwares/' + id + '/force?_method=DELETE';
+        deleteForm.submit();
+    }
+
+    document.querySelectorAll('.btn-restore').forEach(item => {
+    item.addEventListener('click', event => {
+        event.preventDefault();
+
+        const itemId = item.getAttribute('data-id');
+        restoreForm.action = '/hardwares/' + itemId + '/restore?_method=PATCH';
+        restoreForm.submit();
+        console.log(itemId);
+    });
+});
+
+</script>

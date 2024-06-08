@@ -1,0 +1,185 @@
+<form name="container-form" class="mt-4" method="POST" action="/hardwares/handle-form-actions">
+
+    <div>
+        <h3>My hardware products</h3>
+        <a href="/me/bin/hardwares"> Bin </a>
+
+        <div class="mt-4 d-flex align-items-center" style="margin: 10px;">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">
+                    Select all
+                </label>
+            </div>
+
+            <select class="form-control form-control-sm" name="action" required
+                style="margin-right: 10px; margin-left: 10px; width: 200px;">
+                <option value="" selected>-- Open this select menu --</option>
+                <option value="delete">Delete</option>
+            </select>
+
+            <button class="btn btn-primary btn-sm btn-check-all-submit disabled"
+                style="margin-left: 10px;">Apply</button>
+        </div>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">#</th>
+                <th scope="col">
+                    Name
+                    {{{sortable 'name' _sort}}}
+                </th>
+                <th scope="col">Price</th>
+                <th scope="col">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each hardware}}
+            <tr>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="cartIds[]" value="{{this._id}}" id="">
+                    </div>
+                </td>
+                <th scope="row">{{ sum @index 1}}</th>
+
+                <td>{{this.name}}</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>
+                    <a href="/hardwares/{{this._id}}/edit" class="btn btn-link">Edit</a>
+                    <a href="" class="btn btn-link" data-id='{{this._id}}' data-bs-toggle='modal'
+                        data-bs-target='#comfirmDelete'>Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    You have no products
+                    <a href="/hardwares/create"> Post New Products </a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- Confirm Delete Code --}}
+
+<div class="modal" id='comfirmDelete' tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Do you want to delete ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id='btn-delete-hardware' type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete form --}}
+
+<form name="delete-hardware-form" method="POST">
+</form>
+
+<script>
+    const comfirmDelete = document.getElementById('comfirmDelete')
+
+    var id;
+    var deleteForm = document.forms['delete-hardware-form'];
+    var btnDeleteCourse = document.getElementById('btn-delete-hardware');
+
+    var containerForm = document.forms['container-form'];
+
+    var checkboxAll = document.getElementById('checkbox-all');
+    var codeItemCheckBox = document.querySelectorAll('input[name="cartIds[]"]')
+    var checkAllSubmitBtn = document.querySelector(".btn-check-all-submit");
+    var mySelect = document.querySelector("select[name='action']");
+
+
+    if (comfirmDelete) {
+        comfirmDelete.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget
+            id = button.getAttribute('data-id')
+        })
+    }
+
+    btnDeleteCourse.onclick = function () {
+        deleteForm.action = '/hardwares/' + id + '?_method=DELETE';
+        deleteForm.submit();
+    }
+
+
+    // check box all
+
+    checkboxAll.onchange = function () {
+        var isCheckAll = checkboxAll.checked;
+        if (isCheckAll) {
+            codeItemCheckBox.forEach(function (checkbox) {
+                checkbox.checked = true;
+
+            });
+        } else {
+            codeItemCheckBox.forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
+        }
+        RenderCheckAllSubmitBtn();
+    }
+
+    //course item check box
+    codeItemCheckBox.forEach(function (checkbox) {
+        checkbox.addEventListener('click', function () {
+            let num = codeItemCheckBox.length;
+
+            var numChecked = Array.from(codeItemCheckBox).filter(function (checkbox) {
+                return checkbox.checked;
+            }).length;
+
+            if (num == numChecked) {
+                checkboxAll.checked = true;
+            } else {
+                checkboxAll.checked = false;
+            }
+
+            RenderCheckAllSubmitBtn();
+        });
+    });
+
+    //Check all submit button click 
+    checkAllSubmitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var isSubmittable = false;
+        if (checkAllSubmitBtn.classList.contains("disabled")) {
+            isSubmittable = false;
+        } else {
+            isSubmittable = true;
+        }
+
+        if (isSubmittable) {
+            if (mySelect.value !== "") {
+                containerForm.submit();
+            }
+        }
+    });
+
+    //Re-render check all submit button
+    function RenderCheckAllSubmitBtn() {
+        var numChecked = Array.from(codeItemCheckBox).filter(function (checkbox) {
+            return checkbox.checked;
+        }).length;
+
+        if (numChecked) {
+            checkAllSubmitBtn.classList.remove("disabled");
+        } else {
+            checkAllSubmitBtn.classList.add("disabled");
+
+        }
+    }
+
+</script>

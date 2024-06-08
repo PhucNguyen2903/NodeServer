@@ -1,0 +1,24 @@
+<div class="mt-4">
+    <h3>Edit Products</h3>
+
+    <form class="mt-4" method="POST" action="/hardwares/{{hardware._id}}?_method=PUT">
+        <div class="form-group">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" value="{{hardware.name}}" id="name" name="name">
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea  class="form-control" id="description" name="description">{{hardware.description}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" class="form-control"  id="price" name="price">
+
+        </div>
+        <div class="form-group">
+            <label for="type" class="form-label">Type</label>
+            <input type="text" class="form-control" id="type" name="type">
+        </div>
+        <button type="submit" class="btn btn-primary"> Save</button>
+    </form>
+</div>

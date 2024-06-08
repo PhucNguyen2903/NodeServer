@@ -1,14 +1,19 @@
+const Hardware = require('../models/Hardware');
+const { multipleMoongooseToObject } = require('../../util/moongoose');
+
 class SiteController {
+  //[GET] /home
+  async index(req, res, next) {
+    Hardware.find({}).then(hardware => {
+      res.render('home', {  hardware: multipleMoongooseToObject(hardware) })
+      
+    }).catch(next);
+  }
 
-    //[GET] /home 
-    index(req, res) {
-        res.render('home');
-    }
-
-    //[GET] /search
-    search(req, res) {
-        res.render('search');
-    }
+  //[GET] /search
+  search(req, res) {
+    res.render('search');
+  }
 }
 
-module.exports = new SiteController;
+module.exports = new SiteController();
